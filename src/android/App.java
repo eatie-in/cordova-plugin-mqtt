@@ -13,6 +13,8 @@ import com.orhanobut.logger.FormatStrategy;
 import com.orhanobut.logger.Logger;
 import com.orhanobut.logger.PrettyFormatStrategy;
 
+import org.apache.cordova.BuildConfig;
+
 public class App extends Application {
     private static Context mContext;
     private String CHANNEL_ID = "MQTT";

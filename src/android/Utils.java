@@ -1,4 +1,4 @@
-package in.vishnu.mqttdemo;
+package in.eatie;
 
 import android.content.ContentResolver;
 import android.content.Context;

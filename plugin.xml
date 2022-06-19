@@ -31,13 +31,19 @@
             <service android:name="in.eatie.MQTTService" android:stopWithTask="false" android:enabled="true" android:exported="false" android:foregroundServiceType="mediaPlayback"></service>
             <activity android:name="in.eatie.AlertActivity" android:exported="false" android:label="Eatie" android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         </config-file>
+        <hook type="after_prepare" src="hooks/android_app_name.js" />
+        <edit-config file="AndroidManifest.xml" target="/manifest/application" mode="merge">
+            <application android:name="in.eatie.App" />
+        </edit-config>
 
-        <source-file src="src/android/MQTTPlugin.java" target-dir="src/in/eatie/MQTTPlugin.java" />
+
+        <source-file src="src/android/MQTTPlugin.java" target-dir="src/in/eatie/" />
         <source-file src="src/android/App.java" target-dir="src/in/eatie/" />
         <source-file src="src/android/MQTTService.java" target-dir="src/in/eatie/" />
         <source-file src="src/android/MQTT.java" target-dir="src/in/eatie/" />
         <source-file src="src/android/Utils.java" target-dir="src/in/eatie/" />
         <source-file src="src/android/AlertActivity.java" target-dir="src/in/eatie/" />
-        <source-file src="src/android/layout/alert_activity.xml" target-dir="res/layout" />
+        <source-file src="src/android/layout/alert_activity.xml" target-dir="res/layout/" />
+        <source-file src="src/android/drawable/ic_baseline_notifications_active.xml" target-dir="res/drawable/" />
     </platform>
 </plugin>

@@ -7,15 +7,19 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.content.Context;
+
 
 public class AlertActivity extends AppCompatActivity {
     private Context mContext;
+    private String mPackageName;
     private static final String mLayoutName = "activity_alert";
     private static Utils utils = Utils.getUtils(App.getAppContext());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         mContext = App.getAppContext();
+        mPackageName = mContext.getPackageName();
         super.onCreate(savedInstanceState);
         wakeup();
         setContentView(getLayout());

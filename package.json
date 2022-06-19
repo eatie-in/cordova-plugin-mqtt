@@ -1,0 +1,17 @@
+{
+  "name": "cordova-plugin-mqtt",
+  "version": "0.0.1",
+  "description": "mosquitto mqtt",
+  "cordova": {
+    "id": "cordova-plugin-mqtt",
+    "platforms": [
+      "android"
+    ]
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "author": "",
+  "license": "ISC"
+}

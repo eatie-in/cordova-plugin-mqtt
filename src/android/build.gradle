@@ -1,0 +1,9 @@
+repositories {
+    mavenCentral()
+    maven {
+            url "https://repo.eclipse.org/content/repositories/paho-snapshots/"
+        }
+}
+dependencies{
+        implementation 'com.orhanobut:logger:2.2.0'
+}

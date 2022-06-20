@@ -126,7 +126,7 @@ public class MQTTService extends Service {
             e.printStackTrace();
             Logger.e(e.getMessage());
         }
-        Notification notification = this.createNotification("connected");
+        Notification notification = this.createNotification("connecting..");
         startForeground(2, notification);
         return START_REDELIVER_INTENT;
     }
@@ -144,7 +144,7 @@ public class MQTTService extends Service {
     }
 
     private void connect(Intent intent) throws JSONException, MqttException {
-        if (mMqTTClient != null) {
+        if (mMqTTClient != null && mMqTTClient.client.isConnected()) {
             Logger.w("Already connected");
             return;
         }
@@ -154,6 +154,7 @@ public class MQTTService extends Service {
         JSONObject options = new JSONObject(optionsString);
         mMqTTClient = new MQTT(broker, clientId);
         MqttConnectOptions connectOptions = mMqTTClient.getConnectionOptions(options);
+        Logger.json(options.toString());
         mMqTTClient.connect(connectOptions);
         this.onData(mMqTTClient.getClient());
     }

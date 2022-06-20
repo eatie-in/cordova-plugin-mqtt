@@ -13,7 +13,7 @@ import android.content.Context;
 public class AlertActivity extends AppCompatActivity {
     private Context mContext;
     private String mPackageName;
-    private static final String mLayoutName = "activity_alert";
+    private static final String mLayoutName = "alert_activity";
     private static Utils utils = Utils.getUtils(App.getAppContext());
 
     @Override
@@ -44,7 +44,7 @@ public class AlertActivity extends AppCompatActivity {
     }
 
     public void viewOrder(View view) {
-        stopAll();
+        this.finish();stopAll();
     }
 
     public void stopAll() {

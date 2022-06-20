@@ -1,12 +1,12 @@
 package in.eatie;
 
-import android.content.Intent;
+import static android.os.Build.VERSION.SDK_INT;
+import static android.os.Build.VERSION_CODES.M;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.ActivityResultCaller;
-import androidx.activity.result.contract.ActivityResultContracts;
+import android.app.Activity;
+import android.content.Context;
+import android.os.PowerManager;
+import android.provider.Settings;
 
 import org.apache.cordova.CordovaInterface;
 import org.apache.cordova.CordovaPlugin;
@@ -21,25 +21,32 @@ import org.json.JSONObject;
  * This class echoes a string called from JavaScript.
  */
 public class MQTTPlugin extends CordovaPlugin {
-    ActivityResultLauncher<Intent> activityResultLauncher;
+    public static Activity mActivity;
+    protected static CallbackContext mCallbackContext;
+    public static Context mApplicationContext;
+
+
+
     @Override
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
-//        activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
-//            @Override
-//            public void onActivityResult(ActivityResult result) {
-//
-//            }
-//        });
-
-
+        mActivity = cordova.getActivity();
+        mApplicationContext = mActivity.getApplicationContext();
     }
 
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-        if (action.equals("coolMethod")) {
-            String message = args.getString(0);
-            this.coolMethod(message, callbackContext);
+        mCallbackContext = callbackContext;
+        if (action.equals("connect")) {
+            this.connect(args);
+            return true;
+        }
+        if (action.equals("subscribe")) {
+            this.subscribe(args);
+            return true;
+        }
+        if (action.equals("disconnect")) {
+            this.disconnect();
             return true;
         }
         return false;
@@ -53,19 +60,68 @@ public class MQTTPlugin extends CordovaPlugin {
         }
     }
 
-    private void connect(){
 
+
+    private Boolean isIgnoringBatteryOptimizations(){
+        Boolean isIgnoringBatteryOptimizations = true;
+        if(SDK_INT >= M){
+            String packageName = mActivity.getPackageName();
+            PowerManager powerManager = (PowerManager) mActivity.getSystemService(Context.POWER_SERVICE);
+            isIgnoringBatteryOptimizations = powerManager.isIgnoringBatteryOptimizations(packageName);
+        }
+        return isIgnoringBatteryOptimizations;
     }
 
-    private void disconnect(){
-
+    private void _connect(JSONArray args){
+        Boolean canDrawOverlays = false;
+        Boolean isIgnoringBatteryOptimizations = true;
+        if (SDK_INT >= M) {
+            canDrawOverlays = Settings.canDrawOverlays(mApplicationContext);
+            isIgnoringBatteryOptimizations = this.isIgnoringBatteryOptimizations();
+        }
+        if(!canDrawOverlays ||!isIgnoringBatteryOptimizations ){
+            mCallbackContext.error("Please enable overlay");
+            return;
+        }
+       MQTTService.startService(args);
+        mCallbackContext.success("OK");
     }
 
-    private void subscribe(){
-
+    private void connect(JSONArray args){
+        cordova.getThreadPool().execute(new Runnable() {
+            @Override
+            public void run() {
+                _connect(args);
+            }
+        });
     }
 
-    private void unSubscribe(){
+    public void disconnect(){
+        cordova.getThreadPool().execute(new Runnable() {
+            @Override
+            public void run() {
+                MQTTService.stopService();
+            }
+        });
+    }
 
+    private void _subscribe(JSONArray args) throws JSONException {
+        JSONObject options = args.getJSONObject(0);
+        String topic = options.getString("topic");
+        int qos = options.getInt( "qos");
+        MQTTService.subscribe(topic,qos);
+    }
+
+    private void subscribe(JSONArray args){
+        cordova.getThreadPool().execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    _subscribe(args);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }
